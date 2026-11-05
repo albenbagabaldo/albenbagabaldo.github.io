@@ -4,10 +4,11 @@ $( document ).ready(function() {
 
   // DOMMouseScroll included for firefox support
   var canScroll = true,
-      scrollController = null;
+      scrollController = null,
+      useSectionGestures = window.matchMedia('(min-width: 768px) and (pointer: fine)').matches;
   $(this).on('mousewheel DOMMouseScroll', function(e){
 
-    if (!($('.outer-nav').hasClass('is-vis'))) {
+    if (useSectionGestures && !($('.outer-nav').hasClass('is-vis'))) {
 
       e.preventDefault();
 
@@ -63,19 +64,21 @@ $( document ).ready(function() {
 
   });
 
-  // swipe support for touch devices
-  var targetElement = document.getElementById('viewport'),
-      mc = new Hammer(targetElement);
-  mc.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
-  mc.on('swipeup swipedown', function(e) {
+  // Use section swipes on desktop; mobile browsers retain native page scrolling.
+  if (useSectionGestures) {
+    var targetElement = document.getElementById('viewport'),
+        mc = new Hammer(targetElement);
+    mc.get('swipe').set({ direction: Hammer.DIRECTION_VERTICAL });
+    mc.on('swipeup swipedown', function(e) {
 
-    updateHelper(e);
+      updateHelper(e);
 
-  });
+    });
+  }
 
   $(document).keyup(function(e){
 
-    if (!($('.outer-nav').hasClass('is-vis'))) {
+    if (useSectionGestures && !($('.outer-nav').hasClass('is-vis')) && (e.keyCode === 38 || e.keyCode === 40)) {
       e.preventDefault();
       updateHelper(e);
     }
